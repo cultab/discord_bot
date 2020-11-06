@@ -5,6 +5,7 @@ import discord
 import random
 import logging
 import re
+import sys
 
 from logging import info
 from dotenv import load_dotenv
@@ -15,7 +16,10 @@ SERVER = os.getenv('DISCORD_SERVER')
 
 # TODO use custom logger
 
-logging.basicConfig(level=logging.INFO, filename='disc.log', filemode='w', format='%(asctime)s-%(levelname)s-%(message)s')
+file_handler = logging.FileHandler(filename='disc.log')
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
+logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(levelname)s-%(message)s', handlers=handlers)
 
 info(f'Token: {TOKEN}')
 info(f'Server: {SERVER}')
@@ -26,7 +30,6 @@ def find_command(message):
     nopref = message.content[1:]
     command = nopref.split(' ', maxsplit=1)
     return command[0]
-
 
 async def gay(message):
     if (message.channel.guild.get_member(user_id=289828156309897226) in message.mentions):
