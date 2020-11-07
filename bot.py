@@ -37,6 +37,7 @@ async def gay(message):
     if (message.channel.guild.get_member(user_id=287317558342713354) in message.mentions):
         percent = 100
     else:
+        random.seed(message.mentions[0])
         percent = random.random() * 100
         percent = round(percent, 0)
     for user in message.mentions:
