@@ -7,12 +7,15 @@ import logging
 import re
 import sys
 
+from datetime import datetime
+from time import sleep
 from logging import info
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 SERVER = os.getenv('DISCORD_SERVER')
+SEED = os.getenv('DISCORD_SEED')
 
 # TODO use custom logger
 
@@ -31,18 +34,67 @@ def find_command(message):
     command = nopref.split(' ', maxsplit=1)
     return command[0]
 
+
 async def gay(message):
     if (message.channel.guild.get_member(user_id=289828156309897226) in message.mentions):
         percent = 101
     if (message.channel.guild.get_member(user_id=287317558342713354) in message.mentions):
         percent = 100
     else:
-        random.seed(message.mentions[0])
+        random.seed(message.mentions[0].name + SEED)  # use username as seed
         percent = random.random() * 100
         percent = round(percent, 0)
     for user in message.mentions:
         info(f'Called {user.name} {percent}% gay!')
         await message.channel.send(f'{user.mention} is {percent}% gay. :rainbow_flag:')
+
+
+async def schlong(message):
+    random.seed(message.mentions[0].name + SEED)  # use username as seed
+    rand_1 = random.randint(0, 30) / 3
+    rand_2 = random.randint(7, 24) / 3
+    rand_3 = random.randint(12, 15) / 3
+
+    length = rand_1 + rand_2 + rand_3
+    length = round(length, 0)
+
+    inch = length / 2.54
+    inch = round(inch, 2)
+
+    for user in message.mentions:
+        info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
+        await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
+
+mocking_msgs = ['{name}? How original..',
+                'lmao {name}?, another COMEDIC MASTERPIECE by {name}!',
+                'really? {name}? :rolling_eyes:',
+                'This time you overdid it, I mean {name}? come on..',
+                '{name}? hahaha, yes hello {year} called and they want their name back',
+                '{name}? the {decade}\'s called they their style back',
+                '{name}, sounds like a grandma name',
+                '{name}? that\'s the name of my dead dog',
+                'yep.. that\'s a pedo name',
+                '{name} hmm.. ίσως ξέχασα να βάλω στη μπρίζα την γαργαλιέρα',
+                '{name}, now that\'s an original name... said nobody',
+                'your name is as ugly as your face']
+
+async def mock(message):
+    random.seed(message.mentions[0].name + SEED)  # use username as seed
+
+    await message.channel.send('hmm...')
+    sleep(1)
+
+    mocking = random.choice(mocking_msgs)
+    year = datetime.now().year - 1
+    decade = random.randint(1, 9) * 10
+
+    formated_mock = mocking.format(name=message.mentions[0].name, year=year, decade=decade)
+
+    for user in message.mentions:
+        info(f'Mocked {user.name}.')
+        await message.channel.send(formated_mock)
+
+
 
 
 async def flip(message):
@@ -79,10 +131,10 @@ async def nice(message):
     await message.channel.send(f'{user.mention} nice. :cancer:')
 
 
-#@client.event
-#async def on_ready():
-#    for guild in client.guilds
-#    info(f'Ready, connected to {guild}')
+# @client.event
+# async def on_ready():
+#     for guild in client.guilds
+#     info(f'Ready, connected to {guild}')
 
 
 @client.event
@@ -90,12 +142,16 @@ async def on_message(message):
     if (message.author.id != client.user.id):
         if (message.content.startswith('!')):
             command = find_command(message)
-            if (command == 'gay'):
+            if   (command == 'gay'):
                 await gay(message)
             elif (command == 'flip'):
                 await flip(message)
             elif (command == 'cas'):
                 await cas(message)
+            elif (command == 'schlong'):
+                await schlong(message)
+            elif (command == 'mock'):
+                await mock(message)
         elif ("69" in re.sub('<.*>', '', message.content) and not message.content.startswith('http')):
             await nice(message)
 
