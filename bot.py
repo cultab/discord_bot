@@ -53,7 +53,8 @@ async def schlong(message):
     random.seed(message.mentions[0].name + SEED)  # use username as seed
     rand_1 = random.randint(0, 30) / 3
     rand_2 = random.randint(7, 24) / 3
-    rand_3 = random.randint(12, 15) / 3
+    # rand_3 = random.randint(12, 15) / 3
+    rand_3 = random.randint(14, 17) / 3
 
     length = rand_1 + rand_2 + rand_3
     length = round(length, 0)
@@ -62,8 +63,11 @@ async def schlong(message):
     inch = round(inch, 2)
 
     for user in message.mentions:
-        info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
-        await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
+        if user.id == "382113257567289345":
+            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108??? :eggplant:')
+        else:
+            info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
+            await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
 
 mocking_msgs = ['{name}? How original..',
                 'lmao {name}?, another COMEDIC MASTERPIECE by {name}!',
