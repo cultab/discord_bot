@@ -1,4 +1,5 @@
 #!/bin/python3
+"""A discord.py bot."""
 
 import os
 import discord
@@ -30,12 +31,14 @@ client = discord.Client()
 
 
 def find_command(message):
+    """Get a command string from a message."""
     nopref = message.content[1:]
     command = nopref.split(' ', maxsplit=1)
     return command[0]
 
 
 async def gay(message):
+    """Call a user gay :)."""
     if (message.channel.guild.get_member(user_id=289828156309897226) in message.mentions):
         percent = 101
     if (message.channel.guild.get_member(user_id=287317558342713354) in message.mentions):
@@ -50,6 +53,7 @@ async def gay(message):
 
 
 async def schlong(message):
+    """Measure a user's schlong."""
     random.seed(message.mentions[0].name + SEED)  # use username as seed
     rand_1 = random.randint(0, 30) / 3
     rand_2 = random.randint(7, 24) / 3
@@ -63,8 +67,8 @@ async def schlong(message):
     inch = round(inch, 2)
 
     for user in message.mentions:
-        if user.id == "382113257567289345":
-            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108??? :eggplant:')
+        if user.id == 382113257567289345:
+            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108mm?! :gun:')
         else:
             info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
             await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
@@ -82,7 +86,9 @@ mocking_msgs = ['{name}? How original..',
                 '{name}, now that\'s an original name... said nobody',
                 'your name is as ugly as your face']
 
+
 async def mock(message):
+    """Mock a user."""
     random.seed(message.mentions[0].name + SEED)  # use username as seed
 
     await message.channel.send('hmm...')
@@ -99,9 +105,8 @@ async def mock(message):
         await message.channel.send(formated_mock)
 
 
-
-
 async def flip(message):
+    """Flip a coin."""
     result = random.choice(['heads', 'tails'])
     info(f'Flipped a coin for {message.author.name} and it was {result}!')
     await message.channel.send(f'{message.author.mention} it\'s {result}!')
@@ -118,6 +123,7 @@ confirm = [' en route!',
 
 
 async def cas(message):
+    """Call in close air support."""
     nato1 = random.choice(alphabet)
     nato2 = random.choice(alphabet)
     nato3 = random.choice(alphabet)
@@ -130,6 +136,7 @@ async def cas(message):
 
 
 async def nice(message):
+    """Nice."""
     user = message.author
     info(f'Found something nice in {message.content} by {user.name}!')
     await message.channel.send(f'{user.mention} nice. :cancer:')
@@ -143,10 +150,11 @@ async def nice(message):
 
 @client.event
 async def on_message(message):
+    """Dispach commands if they exist in a message."""
     if (message.author.id != client.user.id):
         if (message.content.startswith('!')):
             command = find_command(message)
-            if   (command == 'gay'):
+            if (command == 'gay'):
                 await gay(message)
             elif (command == 'flip'):
                 await flip(message)
@@ -162,12 +170,14 @@ async def on_message(message):
 
 @client.event
 async def on_member_join(member):
+    """Welcome new users."""
     botchannel = member.guild.get_channel(697428498251251753)
     info(f'Threatened {member.name} with bannu~!\n')
     await botchannel.send(f'{member.mention} Say happy birthday or you get ding dong bannu. :partying_face:')
 
 
 def main():
+    """Entry."""
     client.run(TOKEN)
 
 
