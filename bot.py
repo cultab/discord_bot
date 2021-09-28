@@ -8,6 +8,7 @@ import logging
 import re
 import sys
 
+from itertools import chain
 from datetime import datetime
 # from time import sleep
 from asyncio import sleep as sleep
@@ -39,6 +40,15 @@ def find_command(message):
     return command[0]
 
 
+def mention_random_seed(message):
+    """Use a mention for a random seed."""
+    if message.mentions:
+        random.seed(message.mentions[0].name + SEED)  # use username as seed
+    elif message.role_mentions:
+        random.seed(message.role_mentions[0].name + SEED)  # else use the message itself, it should't change too much
+    return
+
+
 async def gay(message):
     """Call @user gay, with science."""
     if (message.channel.guild.get_member(user_id=289828156309897226) in message.mentions):
@@ -46,17 +56,18 @@ async def gay(message):
     if (message.channel.guild.get_member(user_id=287317558342713354) in message.mentions):
         percent = 100
     else:
-        random.seed(message.mentions[0].name + SEED)  # use username as seed
+        mention_random_seed(message)
         percent = random.random() * 100
         percent = round(percent, 0)
-    for user in message.mentions:
-        info(f'Called {user.name} {percent}% gay!')
-        await message.channel.send(f'{user.mention} is {percent}% gay. :rainbow_flag:')
+    for mentioned in chain(message.mentions, message.role_mentions):
+        info(f'Called {mentioned.name} {percent}% gay!')
+        await message.channel.send(f'{mentioned.mention} is {percent}% gay. :rainbow_flag:')
 
 
 async def schlong(message):
     """Measure @user's schlong."""
-    random.seed(message.mentions[0].name + SEED)  # use username as seed
+    mention_random_seed(message)
+
     rand_1 = random.randint(0, 30) / 3
     rand_2 = random.randint(7, 24) / 3
     # rand_3 = random.randint(12, 15) / 3
@@ -68,53 +79,53 @@ async def schlong(message):
     inch = length / 2.54
     inch = round(inch, 2)
 
-    for user in message.mentions:
-        if user.id == 382113257567289345:
+    for mention in chain(message.mentions, message.role_mentions):
+        if mention.id == 382113257567289345:
             # await message.channel.send(f'{user.mention}\'s schlong is 12.7x108mm?! :gun:')
-            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108??? :eggplant:')
+            await message.channel.send(f'{mention.mention}\'s schlong is 12.7x108??? :eggplant:')
         else:
-            info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
-            await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
+            info(f'Measured {mention.name}\'s penis size, it\'s {length}cm!')
+            await message.channel.send(f'{mention.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
 
-mocking_msgs = ['{name}? How original..',
-                'lmao {name}?, another COMEDIC MASTERPIECE by {name}!',
-                'really? {name}? :rolling_eyes:',
-                'This time you overdid it, I mean {name}? come on..',
-                '{name}? hahaha, yes hello {year} called and they want their name back',
-                '{name}? the {decade}\'s called they their style back',
-                '{name}, sounds like a grandma name',
-                '{name}? that\'s the name of my dead dog',
+mocking_msgs = ['{nickname}? How original..',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',  # better chance lol
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'really? {nickname}? :rolling_eyes:',
+                'This time you overdid it, I mean {nickname}? come on..',
+                '{nickname}? hahaha, yes hello {year} called and they want their name back',
+                '{nickname}? the {decade}\'s called they their style back',
+                '{nickname}, sounds like a grandma name',
+                '{nickname}? that\'s the name of my dead dog',
                 'yep.. that\'s a pedo name',
-                '{name} hmm.. ίσως ξέχασα να βάλω στη μπρίζα την γαργαλιέρα',
-                '{name}, now that\'s an original name... said nobody',
+                '{nickname} hmm.. ίσως ξέχασα να βάλω στη μπρίζα την γαργαλιέρα',
+                '{nickname}, now that\'s an original name... said {name}',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
+                'lmao {nickname}?, another COMEDIC MASTERPIECE by {name}!',
                 'your name is as ugly as your face']
 
 
 async def mock(message):
     """Mock @user."""
-    if message.mentions:
-        random.seed(message.mentions[0].name + SEED)  # use username as seed
-    else:
-        random.seed(message.role_mentions[0].name + SEED)  # else use the message itself, it should't change too much
+    mention_random_seed(message)
 
     await message.channel.send('hmm...')
-    await sleep(1)
+    await sleep(0.5)
 
     mocking = random.choice(mocking_msgs)
     year = datetime.now().year - 1
     decade = random.randint(1, 9) * 10
 
     if message.mentions:
-        formated_mock = mocking.format(name=message.mentions[0].name, year=year, decade=decade)
-    else:
-        formated_mock = mocking.format(name=message.role_mentions[0], year=year, decade=decade)
+        formated_mock = mocking.format(name=message.mentions[0].name, year=year, decade=decade, nickname=message.mentions[0].nick)
+    elif message.role_mentions:
+        formated_mock = mocking.format(name=message.role_mentions[0], year=year, decade=decade, nickname=message.role_mentions[0])
 
-    for user in message.mentions:
-        info(f'Mocked {user.name}.')
-        await message.channel.send(formated_mock)
-
-    for role in message.role_mentions:
-        info(f'Mocked {role.name}.')
+    for user in chain(message.mentions, message.role_mentions):
+        info(f'Mocked {user.name} by saying: {formated_mock}')
         await message.channel.send(formated_mock)
 
 
