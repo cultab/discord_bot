@@ -9,9 +9,11 @@ import re
 import sys
 
 from datetime import datetime
-from time import sleep
+# from time import sleep
+from asyncio import sleep as sleep
 from logging import info
 from dotenv import load_dotenv
+from inspect import getdoc
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -38,7 +40,7 @@ def find_command(message):
 
 
 async def gay(message):
-    """Call a user gay :)."""
+    """Call @user gay, with science."""
     if (message.channel.guild.get_member(user_id=289828156309897226) in message.mentions):
         percent = 101
     if (message.channel.guild.get_member(user_id=287317558342713354) in message.mentions):
@@ -53,7 +55,7 @@ async def gay(message):
 
 
 async def schlong(message):
-    """Measure a user's schlong."""
+    """Measure @user's schlong."""
     random.seed(message.mentions[0].name + SEED)  # use username as seed
     rand_1 = random.randint(0, 30) / 3
     rand_2 = random.randint(7, 24) / 3
@@ -68,7 +70,8 @@ async def schlong(message):
 
     for user in message.mentions:
         if user.id == 382113257567289345:
-            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108mm?! :gun:')
+            # await message.channel.send(f'{user.mention}\'s schlong is 12.7x108mm?! :gun:')
+            await message.channel.send(f'{user.mention}\'s schlong is 12.7x108??? :eggplant:')
         else:
             info(f'Measured {user.name}\'s penis size, it\'s {length}cm!')
             await message.channel.send(f'{user.mention}\'s schlong is {length}cm ({inch}inch) long! :eggplant:')
@@ -88,20 +91,30 @@ mocking_msgs = ['{name}? How original..',
 
 
 async def mock(message):
-    """Mock a user."""
-    random.seed(message.mentions[0].name + SEED)  # use username as seed
+    """Mock @user."""
+    if message.mentions:
+        random.seed(message.mentions[0].name + SEED)  # use username as seed
+    else:
+        random.seed(message.role_mentions[0].name + SEED)  # else use the message itself, it should't change too much
 
     await message.channel.send('hmm...')
-    sleep(1)
+    await sleep(1)
 
     mocking = random.choice(mocking_msgs)
     year = datetime.now().year - 1
     decade = random.randint(1, 9) * 10
 
-    formated_mock = mocking.format(name=message.mentions[0].name, year=year, decade=decade)
+    if message.mentions:
+        formated_mock = mocking.format(name=message.mentions[0].name, year=year, decade=decade)
+    else:
+        formated_mock = mocking.format(name=message.role_mentions[0], year=year, decade=decade)
 
     for user in message.mentions:
         info(f'Mocked {user.name}.')
+        await message.channel.send(formated_mock)
+
+    for role in message.role_mentions:
+        info(f'Mocked {role.name}.')
         await message.channel.send(formated_mock)
 
 
@@ -115,11 +128,13 @@ alphabet = ['Alfa', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf',
             'Hotel', 'India', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November',
             'Oscar', 'Papa', 'Quebec', 'Romeo', 'Sierra', 'Tango', 'Uniform',
             'Victor', 'Whiskey', 'Xray', 'Yankee', 'Zulu']
+
 confirm = [' en route!',
            ', ETA 10 minutes.',
            ' 5 kliks out, over.',
-           ' heh, nothing personel, kid..',
-           'copy, we\'re on our way']
+           ', heh, nothing personel, kid..',
+           ', 10-4!',
+           ' copy, we\'re on our way']
 
 
 async def cas(message):
@@ -141,6 +156,19 @@ async def nice(message):
     info(f'Found something nice in {message.content} by {user.name}!')
     await message.channel.send(f'{user.mention} nice. :cancer:')
 
+
+async def help(message):
+    """Display this help message."""
+    info("Send help")
+    help = "use the ! prefix to run commands like so `!command arguments`\n"
+    help += "\n"
+    help += "Available commands are:\n"
+    for command in commands:
+        help += f"`!{command.__name__} [args]`\n"
+        help += f"{getdoc(command)}\n"
+        help += "\n"
+
+    await message.channel.send(help)
 
 # @client.event
 # async def on_ready():
@@ -164,6 +192,8 @@ async def on_message(message):
                 await schlong(message)
             elif (command == 'mock'):
                 await mock(message)
+            elif (command == 'help'):
+                await help(message)
         elif ("69" in re.sub('<.*>', '', message.content) and not message.content.startswith('http')):
             await nice(message)
 
@@ -174,6 +204,8 @@ async def on_member_join(member):
     botchannel = member.guild.get_channel(697428498251251753)
     info(f'Threatened {member.name} with bannu~!\n')
     await botchannel.send(f'{member.mention} Say happy birthday or you get ding dong bannu. :partying_face:')
+
+commands = [gay, help, cas, schlong, flip]
 
 
 def main():
